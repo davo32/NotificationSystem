@@ -14,6 +14,12 @@ namespace NotificationSystem
 
         bool isRunning = false;
 
+        [SerializeField] private CanvasGroup Single;
+        bool SingleToggle = false;
+
+        [SerializeField] private CanvasGroup Multi;
+        bool MultiToggle = false;
+
         private void Start()
         {
             CreateNotificationData("Friend Request", "Nova sent a friend request", NotificationEnum.FriendsRequest);
@@ -21,7 +27,6 @@ namespace NotificationSystem
 
             StartCoroutine(BufferNotifications());
         }
-
 
         //Call this function when creating new Notifications
         public void CreateNotificationData(string Title, string Information, NotificationEnum condition)
@@ -84,9 +89,45 @@ namespace NotificationSystem
             }
             isRunning = false;
         }
+
+        //-------------------------------------------------------------------------------------
+
+        public void ToggleMulti()
+        { 
+            MultiToggle = !MultiToggle;
+
+            if (MultiToggle)
+            {
+                Multi.alpha = 1.0f;
+                Multi.interactable = true;
+                Multi.blocksRaycasts = true;
+            }
+            else
+            { 
+                Multi.alpha = 0.0f; 
+                Multi.interactable = false;
+                Multi.blocksRaycasts = false;
+            }
+        }
+
+        public void ToggleSingle()
+        {
+            SingleToggle = !SingleToggle;
+
+            if (SingleToggle)
+            {
+                Single.alpha = 1.0f;
+                Single.interactable = true;
+                Single.blocksRaycasts = true;
+            }
+            else
+            {
+                Single.alpha = 0.0f;
+                Single.interactable = false;
+                Single.blocksRaycasts = false;
+            }
+        }
     }
 }
 
-//create notification
-//use conditon with WaitUntil condition
 
