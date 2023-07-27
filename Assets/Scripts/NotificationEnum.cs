@@ -1,11 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public enum NotificationEnum 
+namespace NotificationSystem
 {
-   Quest,
-   FriendsRequest,
-   LevelProgression,
-   NewMessage
+    public enum NotificationEnum
+    {
+        None,
+        Quest,
+        FriendsRequest,
+        LevelProgression,
+        NewMessage
+    }
 }

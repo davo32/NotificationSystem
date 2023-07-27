@@ -12,19 +12,23 @@ namespace NotificationSystem
         [SerializeField] private GameObject NotificationUI;
         public List<NotificationStruct> notificationData = new List<NotificationStruct>();
 
+        bool isRunning = false;
+
         private void Start()
         {
-            CreateNotificationData("Friend Request", "Nova sent a friend request");
-            CreateNotificationData("Quest Added", "Started Quest Shrine Destruction");
-            CreateNotificationData("Quest Added", "Started Quest Seeing Green");
+            CreateNotificationData("Friend Request", "Nova sent a friend request", NotificationEnum.FriendsRequest);
+            CreateNotificationData("Quest Added", "Started Quest Shrine Destruction", NotificationEnum.Quest);
 
             StartCoroutine(BufferNotifications());
         }
 
+
         //Call this function when creating new Notifications
-        public void CreateNotificationData(string Title, string Information)
+        public void CreateNotificationData(string Title, string Information, NotificationEnum condition)
         {
-            notificationData.Add(new NotificationStruct(Title, Information));
+            notificationData.Add(new NotificationStruct(Title, Information,condition));
+            if(!isRunning) StartCoroutine(BufferNotifications());
+          
         }
 
         private GameObject CreateCopy()
@@ -32,26 +36,53 @@ namespace NotificationSystem
             return Instantiate(NotificationUI);
         }
 
-        IEnumerator BufferNotifications()
+        public IEnumerator BufferNotifications()
         {
+            isRunning = true;
             while (notificationData.Count > 0)
             {
                 CurrentNotification = CreateCopy();
                 CurrentNotification.transform.SetParent(this.transform, false);
                 CurrentNotification.transform.position = transform.position;
+                CurrentNotification.GetComponent<NotificationObject>().EmergencyDeleteTime = DeleteSpeed;
                 CurrentNotification.GetComponent<NotificationObject>().CreateNotification(notificationData[0]);
                 
                 GetComponent<AudioSource>().Play();
 
-                yield return new WaitUntil(() => notificationData[0].Condition);
+                switch(notificationData[0].Condition)
+                {
+                    case NotificationEnum.Quest:
+                        {
+                            Debug.Log("QUEST");
+                            yield return new WaitForSeconds(DeleteSpeed);
+                            break;
+                        }
+                    case NotificationEnum.NewMessage:
+                        {
+                            Debug.Log("NewMessage");
+                            yield return new WaitForSeconds(DeleteSpeed);
+                            break;
+                        }
+                    case NotificationEnum.FriendsRequest: 
+                        {
+                            Debug.Log("FriendsRequest");
+                            yield return new WaitForSeconds(DeleteSpeed);
+                            break;
+                        }
+                }
 
-                //yield return new WaitForSeconds(DeleteSpeed);
-                notificationData.RemoveAt(0);
-                Destroy(CurrentNotification);
-                CurrentNotification = null;
+                Debug.Log("COUNT: " + notificationData.Count);
+                if (notificationData.Count >= 0)
+                {
+                    notificationData.RemoveAt(0);
+                }
+                    Destroy(CurrentNotification);
+                    CurrentNotification = null;
+                
 
                 yield return new WaitForSeconds(Showspeed);
             }
+            isRunning = false;
         }
     }
 }
